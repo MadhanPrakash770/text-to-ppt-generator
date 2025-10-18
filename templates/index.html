@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Text → PowerPoint Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: 50px auto;
+            background-color: #f9f9f9;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        textarea {
+            width: 100%;
+            height: 250px;
+            font-size: 16px;
+            padding: 10px;
+            margin: 15px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            resize: vertical;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .error {
+            color: red;
+            margin: 10px 0;
+            text-align: center;
+        }
+        .loading {
+            text-align: center;
+            margin-top: 15px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>AI Text → PowerPoint Generator</h1>
+    <p>Enter your text below. Each paragraph (separated by a blank line) will become a slide.</p>
+    <textarea id="textInput" placeholder="Type or paste your text here..."></textarea>
+    <button id="generateBtn">Generate Presentation</button>
+    <div id="error" class="error" style="display:none;"></div>
+    <div id="loading" class="loading" style="display:none;">⏳ Generating your presentation... please wait.</div>
+
+    <script>
+        const generateBtn = document.getElementById('generateBtn');
+        const textInput = document.getElementById('textInput');
+        const errorDiv = document.getElementById('error');
+        const loadingDiv = document.getElementById('loading');
+
+        generateBtn.addEventListener('click', async () => {
+            const text = textInput.value.trim();
+
+            if (!text) {
+                errorDiv.textContent = '⚠️ Please enter some text!';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            // Reset UI states
+            errorDiv.style.display = 'none';
+            loadingDiv.style.display = 'block';
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'Generating...';
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text }),
+                });
+
+                if (!response.ok) {
+                    let errorText = 'Failed to generate presentation.';
+                    try {
+                        const error = await response.json();
+                        errorText = error.error || errorText;
+                    } catch {}
+                    throw new Error(errorText);
+                }
+
+                // Download the generated PPTX
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'ai_generated_presentation.pptx';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+            } catch (err) {
+                errorDiv.textContent = `❌ ${err.message}`;
+                errorDiv.style.display = 'block';
+            } finally {
+                // Restore button and hide loading message
+                generateBtn.disabled = false;
+                generateBtn.textContent = 'Generate Presentation';
+                loadingDiv.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
