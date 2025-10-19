@@ -1,54 +1,55 @@
 from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
-from pptx.enum.text import PP_ALIGN
 
-# Create a blank presentation
+# Create a new PowerPoint presentation
 prs = Presentation()
 
-# Use a blank layout
-blank_slide_layout = prs.slide_layouts[6]
+# --- Title Slide ---
+title_slide_layout = prs.slide_layouts[6]  # blank layout
+slide = prs.slides.add_slide(title_slide_layout)
 
-# Create one styled slide
-slide = prs.slides.add_slide(blank_slide_layout)
-
-# === Background ===
+# Background color (blue gradient tone)
 background = slide.background
 fill = background.fill
 fill.solid()
-fill.fore_color.rgb = RGBColor(235, 244, 255)  # light blue
+fill.fore_color.rgb = RGBColor(25, 50, 112)  # deep navy blue
 
-# === Decorative top banner ===
-banner = slide.shapes.add_shape(
-    1,  # rectangle
-    Inches(0), Inches(0),
-    Inches(10), Inches(0.4)
-)
-banner.fill.solid()
-banner.fill.fore_color.rgb = RGBColor(0, 102, 204)
-banner.line.fill.background()
+# Add title text
+title_box = slide.shapes.add_textbox(Inches(1.5), Inches(2.5), Inches(8), Inches(2))
+title_frame = title_box.text_frame
+title = title_frame.add_paragraph()
+title.text = "AI Presentation Template"
+title.font.bold = True
+title.font.size = Pt(48)
+title.font.color.rgb = RGBColor(255, 215, 0)  # gold accent
 
-# === Title text ===
-title_box = slide.shapes.add_textbox(Inches(1), Inches(1), Inches(8), Inches(1.2))
-title_tf = title_box.text_frame
-p = title_tf.add_paragraph()
-p.text = "Your Slide Title"
-p.font.size = Pt(44)
-p.font.bold = True
-p.font.color.rgb = RGBColor(10, 60, 150)
-p.alignment = PP_ALIGN.LEFT
+# Add subtitle text
+subtitle_box = slide.shapes.add_textbox(Inches(1.5), Inches(4), Inches(8), Inches(1.5))
+subtitle_frame = subtitle_box.text_frame
+subtitle = subtitle_frame.add_paragraph()
+subtitle.text = "Generated using OpenAI + Unsplash"
+subtitle.font.size = Pt(28)
+subtitle.font.color.rgb = RGBColor(255, 255, 255)
 
-# === Bullet text ===
-content_box = slide.shapes.add_textbox(Inches(1.2), Inches(2.5), Inches(7.5), Inches(4))
-content_tf = content_box.text_frame
+# --- Content Slide Layout ---
+slide_layout = prs.slide_layouts[6]
+slide = prs.slides.add_slide(slide_layout)
 
-for text in ["- Bullet point example 1", "- Bullet point example 2", "- Bullet point example 3"]:
-    p = content_tf.add_paragraph()
-    p.text = text
-    p.font.size = Pt(22)
-    p.font.color.rgb = RGBColor(40, 40, 40)
-    p.alignment = PP_ALIGN.LEFT
+# Background (lighter gradient style)
+background = slide.background
+fill = background.fill
+fill.solid()
+fill.fore_color.rgb = RGBColor(230, 240, 255)  # soft light blue
 
-# Save file
+# Placeholder for content (used in app.py)
+content_box = slide.shapes.add_textbox(Inches(1), Inches(1.2), Inches(8), Inches(5))
+frame = content_box.text_frame
+frame.word_wrap = True
+frame.text = "Content Slide Example"
+frame.paragraphs[0].font.size = Pt(24)
+frame.paragraphs[0].font.color.rgb = RGBColor(0, 51, 102)
+
+# Save the template
 prs.save("template.pptx")
-print("✅ Created template.pptx successfully.")
+print("✅ Created professional blue-gold template.pptx successfully.")

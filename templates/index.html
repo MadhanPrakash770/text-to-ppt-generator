@@ -1,128 +1,274 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>AI Text → PowerPoint Generator</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 700px;
-            margin: 50px auto;
-            background-color: #f9f9f9;
-            padding: 20px 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        textarea {
-            width: 100%;
-            height: 250px;
-            font-size: 16px;
-            padding: 10px;
-            margin: 15px 0;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            resize: vertical;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            font-size: 18px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 7px;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        button:disabled {
-            background-color: #6c757d;
-            cursor: not-allowed;
-        }
-        .error {
-            color: red;
-            margin: 10px 0;
-            text-align: center;
-        }
-        .loading {
-            text-align: center;
-            margin-top: 15px;
-            color: #333;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Text to PPT Generator | TEAM1</title>
+
+  <style>
+    /* 🌌 Background */
+    body {
+      font-family: "Poppins", "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #000814, #001d3d 70%, #000814);
+      color: #fff;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* ✨ Floating Glow */
+    .glow {
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 215, 0, 0.1), transparent 60%);
+      animation: float 6s ease-in-out infinite alternate;
+    }
+
+    @keyframes float {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(10%, 10%); }
+    }
+
+    /* 💎 Main Container */
+    .container {
+      position: relative;
+      z-index: 10;
+      width: 90%;
+      max-width: 700px;
+      background: rgba(10, 15, 35, 0.9);
+      border: 1px solid rgba(255, 215, 0, 0.3);
+      border-radius: 18px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 0 40px rgba(255, 215, 0, 0.2);
+      backdrop-filter: blur(12px);
+      animation: fadeIn 1.2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 🏴‍☠️ Logo */
+    .logo {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      border: 3px solid #ffd700;
+      object-fit: cover;
+      margin-bottom: 15px;
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+      transition: 0.4s ease;
+    }
+
+    .logo:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 35px rgba(255, 215, 0, 0.8);
+    }
+
+    /* 🧠 Title */
+    h1 {
+      font-size: 2.4rem;
+      color: #ffd700;
+      margin: 10px 0;
+      letter-spacing: 1px;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+
+    h2 {
+      font-size: 1.1rem;
+      color: #b0c4de;
+      opacity: 0.85;
+      margin-bottom: 25px;
+    }
+
+    /* 📝 Input */
+    textarea {
+      width: 100%;
+      height: 220px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border: 1px solid rgba(255, 215, 0, 0.4);
+      border-radius: 12px;
+      padding: 15px;
+      font-size: 16px;
+      outline: none;
+      resize: vertical;
+      margin-bottom: 20px;
+      transition: 0.3s;
+    }
+
+    textarea:focus {
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
+      border-color: #ffd700;
+    }
+
+    /* ⚡ Button */
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #001d3d;
+      background: linear-gradient(90deg, #ffd700, #ffb700);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 30px rgba(255, 215, 0, 0.9);
+      background: linear-gradient(90deg, #ffdf33, #ffe066);
+    }
+
+    /* 🌀 Loader */
+    .loader {
+      border: 4px solid rgba(255, 255, 255, 0.2);
+      border-top: 4px solid #ffd700;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+      display: none;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* ✅ Popup */
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      background: rgba(255, 215, 0, 0.95);
+      color: #001d3d;
+      padding: 20px 40px;
+      border-radius: 15px;
+      box-shadow: 0 0 25px rgba(255, 215, 0, 0.5);
+      font-weight: bold;
+      text-align: center;
+      transition: all 0.4s ease;
+      z-index: 100;
+    }
+
+    .popup.show {
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    /* ⚠️ Error */
+    .error {
+      color: #ffaaaa;
+      background: rgba(255, 0, 0, 0.15);
+      border: 1px solid rgba(255, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 15px;
+      display: none;
+    }
+
+    /* 👣 Footer */
+    footer {
+      margin-top: 25px;
+      color: #ccc;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+    }
+  </style>
 </head>
+
 <body>
-    <h1>AI Text → PowerPoint Generator</h1>
-    <p>Enter your text below. Each paragraph (separated by a blank line) will become a slide.</p>
-    <textarea id="textInput" placeholder="Type or paste your text here..."></textarea>
+  <div class="glow"></div>
+
+  <div class="container">
+    <img
+      src="https://i.pinimg.com/564x/7f/bc/2d/7fbc2d8a6a1283a2ef8bae0586310fc2.jpg"
+      alt="TEAM1 Logo"
+      class="logo"
+    />
+    <h1>Text to PPT Generator</h1>
+    <h2>Created by TEAM1 | AI-Powered Presentation Builder</h2>
+
+    <textarea id="textInput" placeholder="Enter your paragraphs or bullet points here..."></textarea>
     <button id="generateBtn">Generate Presentation</button>
-    <div id="error" class="error" style="display:none;"></div>
-    <div id="loading" class="loading" style="display:none;">⏳ Generating your presentation... please wait.</div>
 
-    <script>
-        const generateBtn = document.getElementById('generateBtn');
-        const textInput = document.getElementById('textInput');
-        const errorDiv = document.getElementById('error');
-        const loadingDiv = document.getElementById('loading');
+    <div id="loader" class="loader"></div>
+    <div id="error" class="error"></div>
+    <footer>© 2025 TEAM1 | Built with Flask + OpenAI</footer>
+  </div>
 
-        generateBtn.addEventListener('click', async () => {
-            const text = textInput.value.trim();
+  <!-- ✅ Popup -->
+  <div id="popup" class="popup">✅ Download Started!<br>Your PPT is being saved...</div>
 
-            if (!text) {
-                errorDiv.textContent = '⚠️ Please enter some text!';
-                errorDiv.style.display = 'block';
-                return;
-            }
+  <script>
+    const btn = document.getElementById("generateBtn");
+    const loader = document.getElementById("loader");
+    const popup = document.getElementById("popup");
+    const errorDiv = document.getElementById("error");
 
-            // Reset UI states
-            errorDiv.style.display = 'none';
-            loadingDiv.style.display = 'block';
-            generateBtn.disabled = true;
-            generateBtn.textContent = 'Generating...';
+    btn.addEventListener("click", async () => {
+      const text = document.getElementById("textInput").value.trim();
+      if (!text) {
+        errorDiv.textContent = "Please enter some text before generating!";
+        errorDiv.style.display = "block";
+        return;
+      }
 
-            try {
-                const response = await fetch('/generate', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text }),
-                });
+      errorDiv.style.display = "none";
+      loader.style.display = "block";
+      btn.disabled = true;
+      btn.textContent = "Generating...";
 
-                if (!response.ok) {
-                    let errorText = 'Failed to generate presentation.';
-                    try {
-                        const error = await response.json();
-                        errorText = error.error || errorText;
-                    } catch {}
-                    throw new Error(errorText);
-                }
-
-                // Download the generated PPTX
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'ai_generated_presentation.pptx';
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                window.URL.revokeObjectURL(url);
-            } catch (err) {
-                errorDiv.textContent = `❌ ${err.message}`;
-                errorDiv.style.display = 'block';
-            } finally {
-                // Restore button and hide loading message
-                generateBtn.disabled = false;
-                generateBtn.textContent = 'Generate Presentation';
-                loadingDiv.style.display = 'none';
-            }
+      try {
+        const response = await fetch("/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text }),
         });
-    </script>
+
+        loader.style.display = "none";
+        btn.disabled = false;
+        btn.textContent = "Generate Presentation";
+
+        if (!response.ok) {
+          const err = await response.json();
+          throw new Error(err.error || "Failed to generate presentation");
+        }
+
+        // ✅ Success Popup
+        popup.classList.add("show");
+        setTimeout(() => popup.classList.remove("show"), 2500);
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "TEAM1_Final_Presentation.pptx";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (err) {
+        loader.style.display = "none";
+        btn.disabled = false;
+        btn.textContent = "Generate Presentation";
+        errorDiv.textContent = err.message;
+        errorDiv.style.display = "block";
+      }
+    });
+  </script>
 </body>
 </html>
